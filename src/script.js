@@ -2,7 +2,7 @@
   function createId() {
     return "id_" + nextId++;
   }
-  
+
   let tasks = [
     { id: createId(), name: "Java Homework", priority: "High", status: "Progress" },
     { id: createId(), name: "Korean Homework", priority: "Medium", status: "Progress" },
@@ -12,7 +12,6 @@
   let editTask = null;
   let priority = "";
   let status = "";
-  let deleteTaskId = null;
 
   const taskBody = document.getElementById("taskBody");
   const taskModal = document.getElementById("taskModal");
@@ -172,21 +171,35 @@
     taskTable();
     closeModal(taskModal);
   }
+    function askDelete(taskId) {
+    let position = -1;
+    for (let i = 0; i < tasks.length; i++) {
+        if (tasks[i].id === taskId) {
+            position = i;
+            break;
+        }
+    }
 
-  function askDelete(taskId) {
-    deleteTaskId = taskId;
+    if (position === -1) return;
+
     openModal(confirmModal);
-  }
 
-  function deleteTaskNow() {
-    if (deleteTaskId == null) return;
+    function handleYes() {
+        tasks.splice(position, 1);
+        taskTable();
+        closeModal(confirmModal);
+    }
 
-    tasks = tasks.filter((t) => t.id !== deleteTaskId);
+    function handleNo() {
+        closeModal(confirmModal);
+    }
 
-    deleteTaskId = null;
-    taskTable();
-    closeModal(confirmModal);
-  }
+    btnConfirmYes.removeEventListener("click", handleYes);
+    btnConfirmNo.removeEventListener("click", handleNo);
+
+    btnConfirmYes.addEventListener("click", handleYes);
+    btnConfirmNo.addEventListener("click", handleNo);
+}
 
   function setPriority(p) {
     priority = p;
@@ -205,7 +218,7 @@
   }
 
   function findTaskById(taskId) {
-    return tasks.find((t) => t.id == taskId) || null;
+    return tasks.find((t) => t.id == taskId);
   }
 
   function openModal(modalEl) {
